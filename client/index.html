@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Real-Time Tweet Stream</title>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a href="#" class="navbar-brand">Real-Time Tweet Stream</a>
+        </div>
+
+    </nav>
+
+    <div class="container">
+        <div id="tweetStream"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js" integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+
+        const tweetStream = document.getElementById('tweetStream')
+
+        const socket = io();
+
+        const tweets = []
+
+        socket.on('connect', () => {
+            console.log('Connected to server...')
+        })
+
+        socket.on('tweet', (tweet) => {
+            // console.log(tweet)
+            const tweetData = {
+                id: tweet.data.id,
+                text: tweet.data.text,
+                username: `@${tweet.includes.users[0].username}`
+            }
+
+            const tweetEl = document.createElement('div')
+            tweetEl.className = 'card my-4'
+            tweetEl.innerHTML = `
+                <div class="card-body">
+                    <h5 class="card-title">${tweetData.text}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">${tweetData.username}</h6>
+                    <a class="btn btn-primary mt-3" href="https://twitter.com/${tweetData.username}/status/${tweetData.id}">
+                        <i class="fab fa-twitter"></i> Go To Tweet
+                    </a>
+                </div>
+            `;
+
+            tweetStream.appendChild(tweetEl);
+
+            // Tweets Goes away in 10 seconds
+            // setTimeout(() => tweetEl.remove(), 10000);
+
+        })
+
+    </script>
+</body>
+</html>
